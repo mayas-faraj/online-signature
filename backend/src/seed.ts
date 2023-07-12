@@ -2,6 +2,9 @@ import { PrismaClient } from "@prisma/client";
 
 const prismaClient = new PrismaClient();
 
+await prismaClient.document.deleteMany();
+await prismaClient.user.deleteMany();
+
 let result: unknown;
 result = await prismaClient.user.create({
   data: {name: "admin", password: "Zxasqw12", isAdmin: true }
@@ -17,12 +20,13 @@ result = await prismaClient.user.create({
 console.log(result);
 
 result = await prismaClient.document.create({
-  data: { title: "contact-1", signatureX: 20, signatureY: 100}
+  data: { title: "sign to test", file: "/uploads/contract-1.pdf", description: "any description of the file", signatureX: 20, signatureY: 100}
 });
 console.log(result);
 result = await prismaClient.document.create({
-  data: { title: "contact-2", signatureX: 30, signatureY: 120}
+  data: { title: "yet another sign to test", file: "/uploads/contract-2.pdf", description: "any description of the file", signatureX: 20, signatureY: 100}
 });
+
 console.log(result);
 
 

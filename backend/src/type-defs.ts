@@ -29,6 +29,8 @@ const typeDefs = `#graphql
   type Document {
     id: Int!
     title: String!
+    description: String
+    file: String!
     signatureX: Int!
     signatureY: Int!
     isDisabled: Boolean!
@@ -36,12 +38,16 @@ const typeDefs = `#graphql
 
   input DocumentCreate {
     title: String!
+    description: String
+    file: String!
     signatureX: Int!
     signatureY: Int!
   }
 
   input DocumentUpdate {
     title: String
+    description: String
+    file: String
     signatureX: Int
     signatureY: Int
     isDisabled: Boolean
