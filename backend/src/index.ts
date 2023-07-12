@@ -1,21 +1,36 @@
 import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import http from "http";
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import typeDefs from "./type-defs";
 import resolvers from "./resolvers";
 
 // read configuration
 dotenv.config();
+const port = parseInt(process.env.PORT ?? "4000");
 
-// define server
-const server = new ApolloServer({
+// define express server
+const app = express();
+const httpServer = http.createServer(app);
+
+// start apollo server
+const apolloServer = new ApolloServer({
   typeDefs,
-  resolvers
+  resolvers,
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  introspection: false
 });
 
-const { url } = await startStandaloneServer(server, {
-  listen: { port: parseInt(process.env.PORT ?? "3000") }
-});
+await apolloServer.start();
 
-// server started successfully
-console.log(`Server ready at: http://${url}`);
+// apply middleware
+app.use("/graphql", cors<cors.CorsRequest>(), bodyParser.json(), expressMiddleware(apolloServer));
+app.use("/uploads", cors<cors.CorsRequest>(), express.static("uploads", { index: false }));
+
+// start server
+await new Promise<void>((resolve) => httpServer.listen({ port }, resolve));
+console.log(`Server has started: http://localhost:${port}`);
